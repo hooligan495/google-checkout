@@ -88,9 +88,9 @@ anything.
   should be greyed-out; it is used in cases that the item you are selling
   cannot be bought via Google Checkout.  (There's a long list of items that
   are not allowed at https://checkout.google.com/seller/content_policies.html
-* :buy_or_checkout must be one of :buy_now or :checkout .  This determines the
-  look of the button that will be displayed.  The default is to use :checkout
-  if there are two or more items in the cart.
+* :button_image must be one of :buy_now, donate_now, or :checkout .  This 
+  determines the look of the button that will be displayed.  The default is to 
+  use :checkout if there are two or more items in the cart.
 * :style must be one of 'white' or 'trans'.  'white' gets you a white button,
   while 'trans' gets you a transparent button suitable for use on non-white
   backgrounds.  The default is 'white'.

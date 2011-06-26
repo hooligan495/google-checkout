@@ -2,7 +2,7 @@
 module GoogleCheckout
 
   # These are the only sizes allowed by Google.  These shouldn't be needed
-  # by most people; just specify the :size and :buy_or_checkout options to
+  # by most people; just specify the :size and :button_image options to
   # Cart#checkout_button and the sizes are filled in automatically.
   ButtonSizes = {
     :checkout => {
@@ -16,6 +16,12 @@ module GoogleCheckout
       :medium => { :w => 121, :h => 44 },
       :large => { :w => 121, :h => 44 },
     },
+    
+    :donate_now => {
+      :small => { :w => 160, :h => 43 },
+      :medium => { :w => 168, :h => 44 },
+      :large => { :w => 180, :h => 46 },    
+    }
   }
 
   ##
@@ -74,7 +80,7 @@ module GoogleCheckout
       :style => 'white',
       :variant => 'text',
       :loc => 'en_US',
-      :buy_or_checkout => nil,
+      :button_image => nil,
     }
 
     # You need to supply, as strings, the +merchant_id+ and +merchant_key+
@@ -278,6 +284,11 @@ module GoogleCheckout
       digest  = OpenSSL::Digest::Digest.new('sha1')
       OpenSSL::HMAC.digest(digest, @merchant_key, @xml)
     end
+    
+    def donate_button(button_opts = {})
+      button_opts[:button_image] = :donate_now
+      checkout_button(button_opts)
+    end
 
     # Returns HTML for a checkout form for buying all the items in the
     # cart.
@@ -319,7 +330,7 @@ module GoogleCheckout
     # width and height manually, you may specify :size to be one of :small,
     # :medium, or :large, and that you may set :buy_or_checkout to :buy_now
     # or :checkout to get a 'Buy Now' button versus a 'Checkout' button. If
-    # you don't specify :buy_or_checkout, the Cart will try to guess based
+    # you don't specify :button_image, the Cart will try to guess based
     # on if the cart has more than one item in it.  Whatever you don't pass
     # will be filled in with the defaults from DefaultButtonOpts.
     #
@@ -328,11 +339,18 @@ module GoogleCheckout
 
     def button_url(opts = {})
       opts = DefaultButtonOpts.merge opts
-      opts[:buy_or_checkout] ||= @contents.size > 1 ? :checkout : :buy_now
-      opts.merge! ButtonSizes[opts[:buy_or_checkout]][opts[:size]]
-      bname = opts[:buy_or_checkout] == :buy_now ? 'buy.gif' : 'checkout.gif'
+      opts[:button_image] ||= @contents.size > 1 ? :checkout : :buy_now
+      opts.merge! ButtonSizes[opts[:button_image]][opts[:size]]
+      bname = case opts[:button_image]
+      when :buy_now
+        'buy.gif'
+      when :checkout
+        'checkout.gif'
+      when :donate_now
+        'donateNow.gif'
+      end
       opts.delete :size
-      opts.delete :buy_or_checkout
+      opts.delete :button_image
       opts[:merchant_id] = @merchant_id
 
       path = opts.map { |k,v| "#{k}=#{v}" }.join('&')

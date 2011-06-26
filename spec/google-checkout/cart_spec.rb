@@ -15,10 +15,15 @@ describe GoogleCheckout, "Cart (generic)" do
     GoogleCheckout.use_production
     @cart.button_url.should match(%r{http://checkout\.google\.com/buttons/buy\.gif})
   end
+  it "should generate proper live donate button_url" do
+    GoogleCheckout.use_production
+    @cart.button_url(:button_image => :donate_now).should match(%r{http://checkout\.google\.com/buttons/donateNow\.gif})
+  end
+  
 
   it "should generate proper live checkout button_url" do
     GoogleCheckout.use_production
-    @cart.button_url(:buy_or_checkout => :checkout).should match(%r{http://checkout\.google\.com/buttons/checkout\.gif})
+    @cart.button_url(:button_image => :checkout).should match(%r{http://checkout\.google\.com/buttons/checkout\.gif})
   end
 
   it "should generate proper sandbox buy button_url" do
@@ -26,11 +31,19 @@ describe GoogleCheckout, "Cart (generic)" do
   end
 
   it "should generate proper sandbox checkout button_url" do
-    @cart.button_url(:buy_or_checkout => :checkout).should match(%r{http://sandbox\.google\.com/checkout/buttons/checkout\.gif})
+    @cart.button_url(:button_image => :checkout).should match(%r{http://sandbox\.google\.com/checkout/buttons/checkout\.gif})
+  end
+  
+  it "should generate proper sandbox donate button_url" do
+    @cart.button_url(:button_image => :donate_now).should match(%r{http://sandbox\.google\.com/buttons/donateNow\.gif})
   end
 
   it "should generate checkout button" do
     @cart.checkout_button.should match(/buy\.gif/)
+  end
+  
+  it "should generate donate button" do
+    @cart.donate_button.should match(/donateNow\.gif/)
   end
 
 end
